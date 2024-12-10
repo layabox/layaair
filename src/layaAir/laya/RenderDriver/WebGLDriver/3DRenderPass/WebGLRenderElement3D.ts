@@ -120,6 +120,19 @@ export class WebGLRenderElement3D implements IRenderElement3D {
     protected _compileShader(context: WebGLRenderContext3D) {
         var passes: ShaderPass[] = this.subShader._passes;
         this._clearShaderInstance();
+
+        // material ubo
+        {
+            let subShader = this.subShader;
+            let shader = subShader._owner;
+
+            let materialData = this.materialShaderData;
+            let matSubBuffer = materialData.createSubUniformBuffer("Material", subShader._uniformMap);
+            if (matSubBuffer && matSubBuffer.needUpload) { 
+                matSubBuffer.bufferBlock.needUpload();
+            }
+        }
+
         for (var j: number = 0, m: number = passes.length; j < m; j++) {
             var pass: ShaderPass = passes[j];
             //NOTE:this will cause maybe a shader not render but do prepare before，but the developer can avoide this manual,for example shaderCaster=false.

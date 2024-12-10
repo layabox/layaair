@@ -32,6 +32,8 @@ import { GPUEngineStatisticsInfo } from "../../../RenderEngine/RenderEnum/Render
 import { EventDispatcher } from "../../../events/EventDispatcher";
 import { WebGLInternalRT } from "./WebGLInternalRT";
 import { RenderTargetFormat } from "../../../RenderEngine/RenderEnum/RenderTargetFormat";
+import { WebGLBufferManager } from "./WebGLBufferManager";
+import { Config3D } from "../../../../Config3D";
 
 /**
  * 封装Webgl
@@ -107,11 +109,6 @@ export class WebGLEngine extends EventDispatcher implements IRenderEngine {
     //key BufferTargetType
     private _GLBufferBindMap: { [key: number]: GLBuffer | null };
 
-    private _curUBOPointer: number = 0;
-    //记录绑定UBO的glPointer
-    private _GLUBOPointerMap: Map<string, number> = new Map();
-    //记录绑定Pointer的UBO
-    private _GLBindPointerUBOMap: Map<number, GLBuffer> = new Map();
     //bind viewport
     private _lastViewport: Vector4;
     private _lastScissor: Vector4;
@@ -152,9 +149,13 @@ export class WebGLEngine extends EventDispatcher implements IRenderEngine {
     // //TODO:管理FrameBuffer
     // private _RenderBufferResource: any;
 
+    /** @internal */
+    bufferMgr: WebGLBufferManager;
+
     //GPU统计数据
     private _GLStatisticsInfo: Map<GPUEngineStatisticsInfo, number> = new Map();
     static instance: WebGLEngine;
+
     constructor(config: WebGLConfig, webglMode: WebGLMode = WebGLMode.Auto) {
         super();
         this._config = config;
@@ -257,24 +258,6 @@ export class WebGLEngine extends EventDispatcher implements IRenderEngine {
     }
 
     /**
-     * @internal
-     * @param glPointer 
-     * @returns 
-     */
-    _getBindUBOBuffer(glPointer: number): GLBuffer {
-        return this._GLBindPointerUBOMap.get(glPointer);
-    }
-
-    /**
-     * @internal
-     * @param glPointer 
-     * @param buffer 
-     */
-    _setBindUBOBuffer(glPointer: number, buffer: GLBuffer): void {
-        this._GLBindPointerUBOMap.set(glPointer, buffer);
-    }
-
-    /**
      * create GL
      * @param canvas 
      */
@@ -318,7 +301,18 @@ export class WebGLEngine extends EventDispatcher implements IRenderEngine {
         this._activeTextures = [];
         this._GLTextureContext = this.isWebGL2 ? new GL2TextureContext(this) : new GLTextureContext(this);
         this._GLRenderDrawContext = new GLRenderDrawContext(this);
+        this._initBufferBlock();
         canvas.addEventListener("webglcontextlost", this.webglContextLost)
+    }
+
+    private _initBufferBlock() {
+        const useUBO = Config3D.enableUniformBufferObject && this.getCapable(RenderCapable.UnifromBufferObject);
+        if (useUBO) {
+            const gl = <WebGL2RenderingContext>this._context;
+
+            let offsetAlignment = gl.getParameter(gl.UNIFORM_BUFFER_OFFSET_ALIGNMENT);
+            this.bufferMgr = new WebGLBufferManager(this, offsetAlignment);
+        }
     }
 
     webglContextLost(e: any) {
@@ -333,7 +327,6 @@ export class WebGLEngine extends EventDispatcher implements IRenderEngine {
         this._GLBufferBindMap[BufferTargetType.ELEMENT_ARRAY_BUFFER] = null;
         this._GLBufferBindMap[BufferTargetType.UNIFORM_BUFFER] = null;
     }
-
 
     _getbindBuffer(target: BufferTargetType) {
         return this._GLBufferBindMap[target];
@@ -451,14 +444,6 @@ export class WebGLEngine extends EventDispatcher implements IRenderEngine {
         return new GLVertexState(this);
     }
 
-    getUBOPointer(name: string): number {
-        if (!this._GLUBOPointerMap.has(name))
-            this._GLUBOPointerMap.set(name, this._curUBOPointer++);
-        return this._GLUBOPointerMap.get(name);
-    }
-
-
-
     getTextureContext(): ITextureContext {
         return this._GLTextureContext;
     }
@@ -540,7 +525,6 @@ export class WebGLEngine extends EventDispatcher implements IRenderEngine {
      * @internal
      */
     uploadUniforms(shader: GLShaderInstance, commandEncoder: CommandEncoder, shaderData: WebGLShaderData, uploadUnTexture: boolean): number {
-        shaderData.applyUBO && shaderData.applyUBOData();
         var data: any = shaderData._data;
         var shaderUniform: any[] = commandEncoder.getArrayData();
         var shaderCall: number = 0;

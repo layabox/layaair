@@ -6,7 +6,6 @@ import { ShadowMode } from "../../../d3/core/light/ShadowMode";
 import { ShadowUtils } from "../../../d3/core/light/ShadowUtils";
 import { CommandBuffer } from "../../../d3/core/render/command/CommandBuffer";
 import { Scene3DShaderDeclaration } from "../../../d3/core/scene/Scene3DShaderDeclaration";
-import { BoundSphere } from "../../../d3/math/BoundSphere";
 import { Plane } from "../../../d3/math/Plane";
 import { ShadowCasterPass } from "../../../d3/shadowMap/ShadowCasterPass";
 import { ShadowCullInfo, ShadowSliceData } from "../../../d3/shadowMap/ShadowSliceData";
@@ -203,10 +202,6 @@ export class WebGLDirectLightShadowRP {
                 context.setViewPort(Viewport._tempViewport);
                 Vector4.tempVec4.setValue(offsetX, offsetY, resolution, resolution);
                 context.setScissor(Vector4.tempVec4);
-            }
-
-            if (sliceData.cameraUBO && sliceData.cameraUBData) {
-                sliceData.cameraUBO.setDataByUniformBufferData(sliceData.cameraUBData);
             }
 
             context.setClearData(RenderClearFlag.Depth, Color.BLACK, 1, 0);

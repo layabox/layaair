@@ -27,8 +27,6 @@ import { SpotLightCom } from "../light/SpotLightCom";
 import { FilterMode } from "../../../RenderEngine/RenderEnum/FilterMode";
 import { RenderCapable } from "../../../RenderEngine/RenderEnum/RenderCapable";
 import { Shader3D } from "../../../RenderEngine/RenderShader/Shader3D";
-import { UnifromBufferData, UniformBufferParamsType } from "../../../RenderEngine/UniformBufferData";
-import { UniformBufferObject } from "../../../RenderEngine/UniformBufferObject";
 import { BufferUsage } from "../../../RenderEngine/RenderEnum/BufferTargetType";
 import { Prefab } from "../../../resource/HierarchyResource";
 import { Stat } from "../../../utils/Stat";
@@ -103,8 +101,6 @@ export class Scene3D extends Sprite {
     /** @internal */
     static sceneID: number;
 
-    /**@internal scene uniform block */
-    static SCENEUNIFORMBLOCK: number;
     //------------------legacy lighting-------------------------------
     /** @internal */
     static LIGHTDIRECTION: number;
@@ -193,32 +189,12 @@ export class Scene3D extends Sprite {
         Scene3D.CLUSTERBUFFER = Shader3D.propertyNameToID("u_LightClusterBuffer");
         Scene3D.TIME = Shader3D.propertyNameToID("u_Time");
         Scene3D.GIRotate = Shader3D.propertyNameToID("u_GIRotate");
-        Scene3D.SCENEUNIFORMBLOCK = Shader3D.propertyNameToID(UniformBufferObject.UBONAME_SCENE);
-        let sceneUniformMap: CommandUniformMap = Scene3D.sceneUniformMap = LayaGL.renderDeviceFactory.createGlobalUniformMap("Scene3D");
-        if (Config3D._uniformBlock) {
 
-            sceneUniformMap.addShaderBlockUniform(Scene3D.SCENEUNIFORMBLOCK, UniformBufferObject.UBONAME_SCENE, [
-                {
-                    id: Scene3D.TIME,
-                    propertyName: "u_Time",
-                    uniformtype: ShaderDataType.Float
-                },
-                {
-                    id: Scene3D.FOGPARAMS,
-                    propertyName: "u_FogParams",
-                    uniformtype: ShaderDataType.Vector4
-                },
-                {
-                    id: Scene3D.FOGCOLOR,
-                    propertyName: "u_FogColor",
-                    uniformtype: ShaderDataType.Vector4
-                }
-            ])
-        } else {
-            sceneUniformMap.addShaderUniform(Scene3D.FOGCOLOR, "u_FogColor", ShaderDataType.Color);
-            sceneUniformMap.addShaderUniform(Scene3D.FOGPARAMS, "u_FogParams", ShaderDataType.Vector4);
-            sceneUniformMap.addShaderUniform(Scene3D.TIME, "u_Time", ShaderDataType.Float);
-        }
+        let sceneUniformMap: CommandUniformMap = Scene3D.sceneUniformMap = LayaGL.renderDeviceFactory.createGlobalUniformMap("Scene3D");
+
+        sceneUniformMap.addShaderUniform(Scene3D.FOGCOLOR, "u_FogColor", ShaderDataType.Color);
+        sceneUniformMap.addShaderUniform(Scene3D.FOGPARAMS, "u_FogParams", ShaderDataType.Vector4);
+        sceneUniformMap.addShaderUniform(Scene3D.TIME, "u_Time", ShaderDataType.Float);
 
         sceneUniformMap.addShaderUniform(Scene3D.DIRECTIONLIGHTCOUNT, "u_DirationLightCount", ShaderDataType.Int);
         sceneUniformMap.addShaderUniform(Scene3D.LIGHTBUFFER, "u_LightBuffer", ShaderDataType.Texture2D);
@@ -267,26 +243,6 @@ export class Scene3D extends Sprite {
 
     /**
      * @internal
-     * @en create Scene UniformBuffer
-     * @returns New Scene UniformBuffer
-     * @zh 创建场景统一缓冲区
-     * @returns 新的场景统一缓冲区
-     */
-    static createSceneUniformBlock(): UnifromBufferData {
-        let uniformpara: Map<string, UniformBufferParamsType> = new Map<string, UniformBufferParamsType>();
-        uniformpara.set("u_Time", UniformBufferParamsType.Number);
-        uniformpara.set("u_FogParams", UniformBufferParamsType.Vector4);
-        uniformpara.set("u_FogColor", UniformBufferParamsType.Vector4);
-        let uniformMap = new Map<number, UniformBufferParamsType>();
-        uniformpara.forEach((value, key) => {
-            uniformMap.set(Shader3D.propertyNameToID(key), value);
-        });
-        return new UnifromBufferData(uniformMap);
-    }
-
-
-    /**
-     * @internal
      */
     static __init__(): void {
         var multiLighting: boolean = Config3D._multiLighting;
@@ -306,9 +262,9 @@ export class Scene3D extends Sprite {
             Scene3D.legacyLightingValueInit()
         }
         Scene3D._shadowCasterPass = new ShadowCasterPass();
-        //UniformBuffer
-        if (Config3D._uniformBlock)
-            configShaderValue.add(Shader3D.SHADERDEFINE_ENUNIFORMBLOCK);
+        // //UniformBuffer
+        // if (Config3D._uniformBlock)
+        //     configShaderValue.add(Shader3D.SHADERDEFINE_ENUNIFORMBLOCK);
 
         let supportFloatTex = LayaGL.renderEngine.getCapable(RenderCapable.TextureFormat_R32G32B32A32);
         if (supportFloatTex) {
@@ -401,10 +357,6 @@ export class Scene3D extends Sprite {
     _collsionTestList: number[] = [];
     /** @internal */
     _shaderValues: ShaderData;
-    /** @interanl */
-    _sceneUniformData: UnifromBufferData;
-    /** @internal */
-    _sceneUniformObj: UniformBufferObject;
     /** @internal */
     _key: SubmitKey = new SubmitKey();
     /** @internal */
@@ -783,20 +735,7 @@ export class Scene3D extends Sprite {
 
         this._shaderValues = LayaGL.renderDeviceFactory.createShaderData(null);
         this._shaderValues.addDefines(Shader3D._configDefineValues);
-        if (Config3D._uniformBlock) {
-            //SceneUniformBlock
-            this._sceneUniformObj = UniformBufferObject.getBuffer(UniformBufferObject.UBONAME_SCENE, 0);
-            this._sceneUniformData = Scene3D.createSceneUniformBlock();
-            if (!this._sceneUniformObj) {
-                this._sceneUniformObj = UniformBufferObject.create(UniformBufferObject.UBONAME_SCENE, BufferUsage.Dynamic, this._sceneUniformData.getbyteLength(), true);
-            }
-            this._shaderValues._addCheckUBO(UniformBufferObject.UBONAME_SCENE, this._sceneUniformObj, this._sceneUniformData);
-            this._shaderValues.setUniformBuffer(Scene3D.SCENEUNIFORMBLOCK, this._sceneUniformObj);
-            //ShadowUniformBlock
-            //Scene3D._shadowCasterPass
-            this._shaderValues._addCheckUBO(UniformBufferObject.UBONAME_SHADOW, Scene3D._shadowCasterPass._castDepthBufferOBJ, Scene3D._shadowCasterPass._castDepthBufferData);
-            this._shaderValues.setUniformBuffer(Shader3D.propertyNameToID(UniformBufferObject.UBONAME_SHADOW), Scene3D._shadowCasterPass._castDepthBufferOBJ);
-        }
+
         this._fogParams = new Vector4(300, 1000, 0.01, 0);
         this.enableFog = false;
         this.fogStart = 300;
@@ -1216,11 +1155,6 @@ export class Scene3D extends Sprite {
         this._alternateLights = null;
         (RenderContext3D._instance.scene == this) && (RenderContext3D._instance.scene = null);
         this._shaderValues.destroy();
-        // todo
-        if (this._sceneUniformData) {
-            this._sceneUniformData.destroy();
-            this._sceneUniformData = null;
-        }
         this._shaderValues = null;
         this.sceneRenderableManager.destroy();
         this._sceneRenderManager = null

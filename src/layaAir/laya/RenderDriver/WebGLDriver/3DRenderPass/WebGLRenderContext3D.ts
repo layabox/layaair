@@ -184,10 +184,22 @@ export class WebGLRenderContext3D implements IRenderContext3D {
             this._start();
             this._needStart = false;
         }
+
+        let engine = WebGLEngine.instance;
+        let bufferMgr = engine.bufferMgr;
+        if (bufferMgr) {
+            bufferMgr.startFrame();
+        }
+
         let elements = list.elements;
         for (var i: number = 0, n: number = list.length; i < n; i++) {
             elements[i]._preUpdatePre(this);//render
         }
+
+        if (bufferMgr) {
+            bufferMgr.upload();
+        }
+
         for (var i: number = 0, n: number = list.length; i < n; i++) {
             elements[i]._render(this);//render
         }
@@ -201,7 +213,18 @@ export class WebGLRenderContext3D implements IRenderContext3D {
             this._needStart = false;
         }
 
+        let engine = WebGLEngine.instance;
+        let bufferMgr = engine.bufferMgr;
+        if (bufferMgr) {
+            bufferMgr.startFrame();
+        }
+
         node._preUpdatePre(this);
+
+        if (bufferMgr) {
+            bufferMgr.upload();
+        }
+
         node._render(this);
         return 0;
     }

@@ -27,13 +27,4 @@ export class GLESCommandUniformMap extends CommandUniformMap {
             throw ('because of align rule, the engine does not support other types as arrays.');
         this._nativeObj.addShaderUniform(propertyID, propertyName, uniformtype, block);
     } //兼容WGSL
-
-    /**
-     * 增加一个Uniform
-     * @param propertyID 
-     * @param propertyKey
-     */
-    addShaderBlockUniform(propertyID: number, blockname: string, blockProperty: UniformProperty[]): void {
-        this._nativeObj.addShaderBlockUniform(propertyID, blockname, blockProperty);
-    }
 }

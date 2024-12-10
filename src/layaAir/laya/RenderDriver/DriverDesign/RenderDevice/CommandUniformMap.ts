@@ -1,6 +1,12 @@
 import { ShaderDataType } from "./ShaderData";
 
-export type UniformProperty = { id: number, propertyName: string, uniformtype: ShaderDataType }
+export type UniformProperty = {
+    id: number,
+    propertyName: string,
+    uniformtype: ShaderDataType,
+    arrayLength: number
+};
+
 export class CommandUniformMap {
 
     constructor(stateName: string) {
@@ -11,7 +17,7 @@ export class CommandUniformMap {
      * @param propertyID 
      * @param propertyKey 
      */
-    addShaderUniform(propertyID: number, propertyKey: string, uniformtype: ShaderDataType, block: string = null): void {
+    addShaderUniform(propertyID: number, propertyKey: string, uniformtype: ShaderDataType): void {
         throw "need override it";
     }
 
@@ -20,16 +26,7 @@ export class CommandUniformMap {
      * @param propertyID 
      * @param propertyName 
      */
-    addShaderUniformArray(propertyID: number, propertyName: string, uniformtype: ShaderDataType, arrayLength: number, block: string = ""): void {
+    addShaderUniformArray(propertyID: number, propertyName: string, uniformtype: ShaderDataType, arrayLength: number): void {
         throw "need override it";
     } //兼容WGSL
-
-    /**
-     * 增加一个Uniform
-     * @param propertyID 
-     * @param propertyKey 
-     */
-    addShaderBlockUniform(propertyID: number, blockname: string, blockProperty: UniformProperty[]): void {
-        throw "need override it";
-    }
 }

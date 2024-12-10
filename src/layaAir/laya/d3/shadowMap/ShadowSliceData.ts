@@ -5,13 +5,6 @@ import { Vector3 } from "../../maths/Vector3";
 import { LayaGL } from "../../layagl/LayaGL";
 import { BoundFrustum } from "../math/BoundFrustum";
 import { ShaderData } from "../../RenderDriver/DriverDesign/RenderDevice/ShaderData";
-import { Config3D } from "../../../Config3D";
-import { UniformBufferObject } from "../../RenderEngine/UniformBufferObject";
-import { BufferUsage } from "../../RenderEngine/RenderEnum/BufferTargetType";
-import { BaseCamera } from "../core/BaseCamera";
-import { UnifromBufferData } from "../../RenderEngine/UniformBufferData";
-
-
 
 /**
  * @en Camera culling information class.
@@ -136,16 +129,6 @@ export class ShadowSpotData {
      * @zh 阴影摄像机的裁剪信息。
      */
     cameraCullInfo: CameraCullInfo;
-    /**
-     * @en Uniform buffer object for the camera.
-     * @zh 摄像机的统一缓冲对象。
-     */
-    cameraUBO: UniformBufferObject;
-    /**
-     * @en Uniform buffer data for the camera.
-     * @zh 摄像机的统一缓冲数据。
-     */
-    cameraUBData: UnifromBufferData;
 
     /**
      * @en Create a new instance of ShadowSpotData.
@@ -153,24 +136,7 @@ export class ShadowSpotData {
      */
     constructor() {
         this.cameraShaderValue = LayaGL.renderDeviceFactory.createShaderData(null);
-
-        if (Config3D._uniformBlock) {
-            let cameraUBO = UniformBufferObject.getBuffer(UniformBufferObject.UBONAME_CAMERA, 0);
-            let cameraUBData = BaseCamera.createCameraUniformBlock();
-
-            if (!cameraUBO) {
-                cameraUBO = UniformBufferObject.create(UniformBufferObject.UBONAME_CAMERA, BufferUsage.Dynamic, cameraUBData.getbyteLength(), false);
-            }
-
-            this.cameraShaderValue._addCheckUBO(UniformBufferObject.UBONAME_CAMERA, cameraUBO, cameraUBData);
-            this.cameraShaderValue.setUniformBuffer(BaseCamera.CAMERAUNIFORMBLOCK, cameraUBO);
-
-            this.cameraUBO = cameraUBO;
-            this.cameraUBData = cameraUBData;
-        }
-
         this.cameraCullInfo = new CameraCullInfo();
-
     }
 }
 
@@ -185,18 +151,6 @@ export class ShadowSliceData {
      * @zh 与阴影切片关联的着色器数据。
      */
     cameraShaderValue: ShaderData;
-
-    /**
-     * @en Uniform buffer object for the shadow slice camera.
-     * @zh 阴影切片摄像机的统一缓冲对象。
-     */
-    cameraUBO: UniformBufferObject;
-
-    /**
-     * @en Uniform buffer data for the shadow slice camera.
-     * @zh 阴影切片摄像机的统一缓冲数据。
-     */
-    cameraUBData: UnifromBufferData; 
 
     /**
      * @en Position of the shadow slice in world space.
@@ -270,21 +224,5 @@ export class ShadowSliceData {
      */
     constructor() {
         this.cameraShaderValue = LayaGL.renderDeviceFactory.createShaderData(null);
-
-        if (Config3D._uniformBlock) {
-            let cameraUBO = UniformBufferObject.getBuffer(UniformBufferObject.UBONAME_CAMERA, 0);
-            let cameraUBData = BaseCamera.createCameraUniformBlock();
-
-            if (!cameraUBO) {
-                cameraUBO = UniformBufferObject.create(UniformBufferObject.UBONAME_CAMERA, BufferUsage.Dynamic, cameraUBData.getbyteLength(), false);
-            }
-
-            this.cameraShaderValue._addCheckUBO(UniformBufferObject.UBONAME_CAMERA, cameraUBO, cameraUBData);
-            this.cameraShaderValue.setUniformBuffer(BaseCamera.CAMERAUNIFORMBLOCK, cameraUBO);
-
-            this.cameraUBO = cameraUBO;
-            this.cameraUBData = cameraUBData;
-        }
-
     }
 }

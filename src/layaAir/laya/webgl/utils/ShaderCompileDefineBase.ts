@@ -2,16 +2,17 @@ import { IShaderInstance } from "../../RenderDriver/DriverDesign/RenderDevice/IS
 import { IDefineDatas } from "../../RenderDriver/RenderModuleData/Design/IDefineDatas";
 import { ShaderDataType } from "../../RenderDriver/DriverDesign/RenderDevice/ShaderData";
 import { Shader3D } from "../../RenderEngine/RenderShader/Shader3D";
-import { SubShader, UniformMapType } from "../../RenderEngine/RenderShader/SubShader";
+import { SubShader } from "../../RenderEngine/RenderShader/SubShader";
 import { LayaGL } from "../../layagl/LayaGL";
 import { IShaderCompiledObj } from "./ShaderCompile";
 import { ShaderNode } from "./ShaderNode";
+import { UniformProperty } from "../../RenderDriver/DriverDesign/RenderDevice/CommandUniformMap";
 export class ShaderProcessInfo {
     defineString: string[];
     vs: ShaderNode;
     ps: ShaderNode;
     attributeMap: { [name: string]: [number, ShaderDataType] };
-    uniformMap: UniformMapType;
+    uniformMap: Map<number, UniformProperty>;
     is2D: boolean;
     shaderShowInfo:string;
     //....其他数据
@@ -45,7 +46,7 @@ export class ShaderCompileDefineBase {
             this._validDefine.add(Shader3D.getDefineByName(k));
     }
 
-   
+
     /**
      * @internal
      */

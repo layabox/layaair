@@ -1403,10 +1403,6 @@ export class Camera extends BaseCamera {
         this._prepareCameraToRender();
         this._applyViewProject(this.viewMatrix, this.projectionMatrix, context.invertY);
         this._contextApply(context);
-        // todo proterty name
-        if (this._cameraUniformData && this._cameraUniformUBO) {
-            this._cameraUniformUBO.setDataByUniformBufferData(this._cameraUniformData);
-        }
 
         if (this.clearFlag == CameraClearFlags.Sky) {
             scene.skyRenderer.setRenderElement(this.skyRenderElement);

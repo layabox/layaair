@@ -992,8 +992,6 @@ export class WebGPUShaderData extends ShaderData {
         return dest;
     }
 
-    _releaseUBOData() { }
-
     /**
      * 清理
      */
