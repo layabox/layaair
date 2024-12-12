@@ -36,9 +36,7 @@ export class NoRenderEngineFactory implements IRenderEngineFactory {
 
 
 export class NoRenderEngine implements IRenderEngine {
-    endFrame(): void {
 
-    }
     _context: any;
     _isShaderDebugMode: boolean;
     _renderOBJCreateContext: IRenderEngineFactory;
@@ -52,6 +50,12 @@ export class NoRenderEngine implements IRenderEngine {
     copySubFrameBuffertoTex(texture: InternalTexture, level: number, xoffset: number, yoffset: number, x: number, y: number, width: number, height: number): void {
     }
     resizeOffScreen(width: number, height: number): void {
+    }
+    endFrame(): void {
+
+    }
+    startFrame(): void {
+
     }
 
     /**@internal */

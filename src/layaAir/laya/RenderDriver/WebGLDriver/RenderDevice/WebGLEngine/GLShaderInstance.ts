@@ -16,6 +16,8 @@ import { GLObject } from "./GLObject";
 
 export class GLShaderInstance extends GLObject {
 
+    static _ErrorShaderInfo: string;
+
     _engine: WebGLEngine;
 
     _gl: WebGLRenderingContext | WebGL2RenderingContext;
@@ -141,9 +143,9 @@ export class GLShaderInstance extends GLObject {
         gl.compileShader(shader);
         if (this._engine._isShaderDebugMode && !gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
             if (!LayaEnv.isPlaying) {
-                console.warn(gl.getShaderInfoLog(shader));
+                console.warn(GLShaderInstance._ErrorShaderInfo + "\n" + gl.getShaderInfoLog(shader));
             } else {
-                console.error(gl.getShaderInfoLog(shader));
+                console.error(GLShaderInstance._ErrorShaderInfo + "\n" + gl.getShaderInfoLog(shader));
             }
         }
         return shader;
@@ -506,9 +508,9 @@ export class GLShaderInstance extends GLObject {
 
     _uniform_UniformBuffer(one: ShaderVariable, value: WebGLUniformBufferBase) {
         let gl = <WebGL2RenderingContext>this._gl;
-        if (value.needUpload) {
-            value.upload();
-        }
+        // if (value.needUpload) {
+        //     value.upload();
+        // }
         value.bind(one.location);
     }
 

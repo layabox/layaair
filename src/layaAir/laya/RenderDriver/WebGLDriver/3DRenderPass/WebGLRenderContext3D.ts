@@ -187,9 +187,6 @@ export class WebGLRenderContext3D implements IRenderContext3D {
 
         let engine = WebGLEngine.instance;
         let bufferMgr = engine.bufferMgr;
-        if (bufferMgr) {
-            bufferMgr.startFrame();
-        }
 
         let elements = list.elements;
         for (var i: number = 0, n: number = list.length; i < n; i++) {

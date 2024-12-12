@@ -19,16 +19,6 @@ export class WebGLSubUniformBuffer extends WebGLUniformBufferBase implements IUn
         buffer.bindBufferRange(location, this.bufferBlock.offset, this.bufferBlock.size);
     }
 
-    public get needUpload(): boolean {
-        return this._needUpload;
-    }
-    public set needUpload(value: boolean) {
-        if (value) {
-            this.bufferBlock.needUpload();
-        }
-        this._needUpload = value;
-    }
-
     bufferBlock: UniformBufferBlock;
     bufferAlone: UniformBufferAlone;
     manager: WebGLBufferManager;
@@ -61,6 +51,7 @@ export class WebGLSubUniformBuffer extends WebGLUniformBufferBase implements IUn
     clearGPUBufferBind(): void {
         // throw new Error("Method not implemented.");
     }
+
     notifyGPUBufferChange(): void {
 
         this.offset = this.bufferBlock.offset;
@@ -74,8 +65,8 @@ export class WebGLSubUniformBuffer extends WebGLUniformBufferBase implements IUn
             uniform.view = new uniform.dataView(this.bufferBlock.cluster.data, offset, size);
         });
         // this.needUpload = true;
-        this.bufferBlock.cluster.upload();
-        this.needUpload = false;
+        //this.bufferBlock.cluster.upload();
+        this.needUpload = true;
     }
 
     destroy(): void {

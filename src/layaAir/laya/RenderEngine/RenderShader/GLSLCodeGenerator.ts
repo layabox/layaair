@@ -85,7 +85,7 @@ export class GLSLCodeGenerator {
         var defineStr: string = "";
 
         // 拼接 shader attribute
-        let useUniformBlock = Config3D._uniformBlock;
+        let useUniformBlock = Config3D._matUseUBO;
         let attributeglsl = GLSLCodeGenerator.glslAttributeString(attributeMap);
         let uniformglsl = GLSLCodeGenerator.glslUniformString(uniformMap, useUniformBlock);
 

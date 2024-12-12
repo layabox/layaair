@@ -8,7 +8,7 @@ import { BaseTexture } from "../../../resource/BaseTexture";
 import { Resource } from "../../../resource/Resource";
 import { InternalTexture } from "../../DriverDesign/RenderDevice/InternalTexture";
 import { WebGLEngine } from "../../WebGLDriver/RenderDevice/WebGLEngine";
-import { ShaderData, ShaderDataType } from "../../DriverDesign/RenderDevice/ShaderData";
+import { ShaderData } from "../../DriverDesign/RenderDevice/ShaderData";
 import { ShaderDefine } from "../Design/ShaderDefine";
 import { WebDefineDatas } from "./WebDefineDatas";
 import { WebGLUniformBuffer } from "../../WebGLDriver/RenderDevice/WebGLUniformBuffer";
@@ -22,6 +22,8 @@ import { Shader3D } from "../../../RenderEngine/RenderShader/Shader3D";
  * 着色器数据类。
  */
 export class WebGLShaderData extends ShaderData {
+
+
 	/**@internal */
 	protected _gammaColorMap: Map<number, Color>;
 
@@ -40,6 +42,9 @@ export class WebGLShaderData extends ShaderData {
 	/** @internal */
 	uniformBuffersPropertyMap: Map<number, WebGLUniformBufferBase>;
 
+	private _needCacheData: boolean = true;
+	private _updateCacheArray: { [key: number]: any } = null;
+
 	/**
 	 * @internal	
 	 */
@@ -53,6 +58,7 @@ export class WebGLShaderData extends ShaderData {
 	 */
 	_initData(): void {
 		this._data = {};
+		if (this._needCacheData) this._updateCacheArray = {};
 		this._gammaColorMap = new Map();
 		this.uniformBuffers = new Map();
 		this.subUniformBuffers = new Map();
@@ -69,17 +75,23 @@ export class WebGLShaderData extends ShaderData {
 		if (!Config3D._uniformBlock || this.uniformBuffers.has(name)) {
 			return;
 		}
-
-
 	}
 
 	createSubUniformBuffer(name: string, uniformMap: Map<number, UniformProperty>) {
-		if (!Config3D._uniformBlock || this.subUniformBuffers.has(name)) {
+		if (!Config3D._uniformBlock) {
 			return null;
 		}
 		else {
 			let subBuffer = this.subUniformBuffers.get(name);
 			if (subBuffer) {
+				//update data
+				for (var i in this._updateCacheArray) {
+					let index = parseInt(i);
+					let ubo = this.uniformBuffersPropertyMap.get(index);
+					if (ubo) {
+						(this._updateCacheArray[i] as Function).call(ubo, index, this._data[index]);
+					}
+				}
 				return subBuffer;
 			}
 		}
@@ -102,7 +114,6 @@ export class WebGLShaderData extends ShaderData {
 			}
 			this.uniformBuffersPropertyMap.set(uniformId, uniformBuffer);
 		});
-
 		return uniformBuffer;
 	}
 
@@ -192,8 +203,8 @@ export class WebGLShaderData extends ShaderData {
 	setBool(index: number, value: boolean): void {
 		this._data[index] = value;
 
-		let ubo = this.uniformBuffersPropertyMap.get(index);
-		if (ubo) {
+		//let ubo = this.uniformBuffersPropertyMap.get(index);
+		if (this._needCacheData) {
 			// todo
 			// ubo set bool
 		}
@@ -216,9 +227,8 @@ export class WebGLShaderData extends ShaderData {
 	setInt(index: number, value: number): void {
 		this._data[index] = value;
 
-		let ubo = this.uniformBuffersPropertyMap.get(index);
-		if (ubo) {
-			ubo.setInt(index, value);
+		if (this._needCacheData) {
+			this._updateCacheArray[index] = WebGLUniformBufferBase.prototype.setInt;
 		}
 	}
 
@@ -238,10 +248,8 @@ export class WebGLShaderData extends ShaderData {
 	 */
 	setNumber(index: number, value: number): void {
 		this._data[index] = value;
-
-		let ubo = this.uniformBuffersPropertyMap.get(index);
-		if (ubo) {
-			ubo.setFloat(index, value);
+		if (this._needCacheData) {
+			this._updateCacheArray[index] = WebGLUniformBufferBase.prototype.setFloat;
 		}
 	}
 
@@ -265,9 +273,8 @@ export class WebGLShaderData extends ShaderData {
 		} else
 			this._data[index] = value.clone();
 
-		let ubo = this.uniformBuffersPropertyMap.get(index);
-		if (ubo) {
-			ubo.setVector2(index, value);
+		if (this._needCacheData) {
+			this._updateCacheArray[index] = WebGLUniformBufferBase.prototype.setVector2;
 		}
 	}
 
@@ -291,9 +298,8 @@ export class WebGLShaderData extends ShaderData {
 		} else
 			this._data[index] = value.clone();
 
-		let ubo = this.uniformBuffersPropertyMap.get(index);
-		if (ubo) {
-			ubo.setVector3(index, value);
+		if (this._needCacheData) {
+			this._updateCacheArray[index] = WebGLUniformBufferBase.prototype.setVector3;
 		}
 	}
 
@@ -317,9 +323,8 @@ export class WebGLShaderData extends ShaderData {
 		} else
 			this._data[index] = value.clone();
 
-		let ubo = this.uniformBuffersPropertyMap.get(index);
-		if (ubo) {
-			ubo.setVector4(index, value);
+		if (this._needCacheData) {
+			this._updateCacheArray[index] = WebGLUniformBufferBase.prototype.setVector4;
 		}
 	}
 
@@ -359,9 +364,8 @@ export class WebGLShaderData extends ShaderData {
 			this._gammaColorMap.set(index, value.clone());
 		}
 
-		let ubo = this.uniformBuffersPropertyMap.get(index);
-		if (ubo) {
-			ubo.setVector4(index, this._data[index]);
+		if (this._needCacheData) {
+			this._updateCacheArray[index] = WebGLUniformBufferBase.prototype.setVector4;
 		}
 	}
 
@@ -394,10 +398,10 @@ export class WebGLShaderData extends ShaderData {
 			this._data[index] = value.clone();
 		}
 
-		let ubo = this.uniformBuffersPropertyMap.get(index);
-		if (ubo) {
-			ubo.setMatrix4x4(index, value.elements);
+		if (this._needCacheData) {
+			this._updateCacheArray[index] = WebGLUniformBufferBase.prototype.setMatrix4x4;
 		}
+
 	}
 
 	/**
@@ -422,9 +426,8 @@ export class WebGLShaderData extends ShaderData {
 			this._data[index] = value.clone();
 		}
 
-		let ubo = this.uniformBuffersPropertyMap.get(index);
-		if (ubo) {
-			ubo.setMatrix3x3(index, value.elements);
+		if (this._needCacheData) {
+			this._updateCacheArray[index] = WebGLUniformBufferBase.prototype.setMatrix3x3;
 		}
 	}
 
@@ -445,10 +448,10 @@ export class WebGLShaderData extends ShaderData {
 	setBuffer(index: number, value: Float32Array): void {
 		this._data[index] = value;
 
-		let ubo = this.uniformBuffersPropertyMap.get(index);
-		if (ubo) {
-			ubo.setBuffer(index, value);
+		if (this._needCacheData) {
+			this._updateCacheArray[index] = WebGLUniformBufferBase.prototype.setBuffer;
 		}
+
 	}
 
 	/**

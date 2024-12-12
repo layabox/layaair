@@ -33,10 +33,16 @@ export class GLESEngine implements IRenderEngine {
   _renderOBJCreateContext: IRenderEngineFactory;
   _nativeObj: any;
   private _GLTextureContext: GLESTextureContext;
+
   constructor(config: WebGLConfig, webglMode: GLESMode = GLESMode.Auto) {
     this._nativeObj = new (window as any).conchGLESEngine(config, webglMode);
   }
+
   endFrame(): void {
+
+  }
+
+  startFrame(): void {
 
   }
   _remapZ: boolean = true;

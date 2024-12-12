@@ -169,6 +169,11 @@ export class WebGLEngine extends EventDispatcher implements IRenderEngine {
         WebGLEngine.instance = this;
     }
 
+    startFrame(): void {
+        this.event("startFrame", null);
+    }
+
+
     endFrame(): void {
         this.event("endFrame", null);
     }

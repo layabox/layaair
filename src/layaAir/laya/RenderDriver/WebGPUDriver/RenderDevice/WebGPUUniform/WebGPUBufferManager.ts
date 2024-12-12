@@ -10,7 +10,7 @@ import { WebGPUStatis } from "../WebGPUStatis/WebGPUStatis";
 export class WebGPUBufferManager extends UniformBufferManager {
     globalId: number; //全局id
     objectName: string; //本对象名称
-
+    _renderContext: any
     constructor(useBigBuffer: boolean) {
         super(useBigBuffer);
         this.objectName = 'WebGPUBufferManager';
@@ -32,13 +32,13 @@ export class WebGPUBufferManager extends UniformBufferManager {
      * @param name 名称
      */
     createGPUBuffer(size: number, name?: string) {
-        return this.renderContext.device.createBuffer({
+        return this._renderContext.device.createBuffer({
             label: name,
             size,
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
     }
-    
+
     /**
      * 将数据写入GPU内存
      * @param buffer GPU内存对象
@@ -47,7 +47,7 @@ export class WebGPUBufferManager extends UniformBufferManager {
      * @param size 写入的数据长度（字节）
      */
     writeBuffer(buffer: any, data: ArrayBuffer, offset: number, size: number) {
-        this.renderContext.device.queue.writeBuffer(buffer, offset, data, offset, size);
+        this._renderContext.device.queue.writeBuffer(buffer, offset, data, offset, size);
     }
 
     /**

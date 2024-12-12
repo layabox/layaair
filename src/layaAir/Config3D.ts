@@ -113,6 +113,9 @@ export class Config3D {
     //----引擎内部使用,不暴露给开发者----
     /**@internal */
     static _uniformBlock: boolean;
+
+    static _matUseUBO: boolean = true;
+
     /**@internal 设置分辨率宽度*/
     static _resoluWidth: number = -1;
     /**@internal 设置分辨率高度*/

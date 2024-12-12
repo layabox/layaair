@@ -14,8 +14,8 @@ export class WebGLBufferManager extends UniformBufferManager {
         this.engine = engine;
 
         this.byteAlign = offsetAlignment;
-        this.renderContext = {};
-        this.renderContext.notifyGPUBufferChange = () => { };
+        engine.on("endFrame", this, this.endFrame);
+        engine.on("startFrame",this,this.startFrame)
     }
 
     createGPUBuffer(size: number, name?: string): GLBuffer {
@@ -24,6 +24,7 @@ export class WebGLBufferManager extends UniformBufferManager {
         buffer.setDataLength(size);
         return buffer;
     }
+
     writeBuffer(buffer: GLBuffer, data: ArrayBuffer, offset: number, size: number): void {
         // buffer.setDataEx(new Float32Array(data), offset, size / 4);
         buffer.bindBuffer();
@@ -31,10 +32,12 @@ export class WebGLBufferManager extends UniformBufferManager {
         gl.bufferSubData(buffer._glTarget, offset, new Float32Array(data, offset, size / 4));
 
     }
+
     statisGPUMemory(bytes: number): void {
         this.engine._addStatisticsInfo(GPUEngineStatisticsInfo.M_GPUMemory, bytes);
         this.engine._addStatisticsInfo(GPUEngineStatisticsInfo.M_GPUBuffer, bytes);
     }
+
     statisUpload(count: number, bytes: number): void {
         this.engine._addStatisticsInfo(GPUEngineStatisticsInfo.C_UniformBufferUploadCount, count);
     }

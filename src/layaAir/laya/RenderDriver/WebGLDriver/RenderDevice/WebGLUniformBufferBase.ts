@@ -11,6 +11,7 @@ export abstract class WebGLUniformBufferBase {
     descriptor: WebGLUniformBufferDescriptor;
 
     protected _needUpload: boolean;
+
     public get needUpload(): boolean {
         return this._needUpload;
     }
@@ -28,7 +29,6 @@ export abstract class WebGLUniformBufferBase {
         let uniform = this.descriptor.uniforms.get(index);
         if (uniform) {
             uniform.view[0] = value;
-
             this.needUpload = true;
         }
     }
