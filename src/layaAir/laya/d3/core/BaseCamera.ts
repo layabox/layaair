@@ -29,8 +29,6 @@ export class BaseCamera extends Sprite3D {
 
     static caemraUBOUnifromMap: CommandUniformMap;
 
-    static UBONAME_CAMERA = "CameraUniformBlock";
-
     /**Camera Uniform PropertyID */
     /**@internal */
     static CAMERAPOS: number;
@@ -108,29 +106,16 @@ export class BaseCamera extends Sprite3D {
         BaseCamera.OPAQUETEXTUREPARAMS = Shader3D.propertyNameToID("u_OpaqueTextureParams");
         BaseCamera.DEPTHZBUFFERPARAMS = Shader3D.propertyNameToID("u_ZBufferParams");
 
-        if (Config._uniformBlock) {
-            BaseCamera.CAMERAUNIFORMBLOCK = Shader3D.propertyNameToID(BaseCamera.UBONAME_CAMERA);
-            camerauniformMap.addShaderUniform(BaseCamera.CAMERAUNIFORMBLOCK, BaseCamera.UBONAME_CAMERA, ShaderDataType.None);
-            let ubomap = BaseCamera.caemraUBOUnifromMap = LayaGL.renderDeviceFactory.createGlobalUniformMap(BaseCamera.UBONAME_CAMERA);
-            ubomap.addShaderUniform(BaseCamera.VIEWMATRIX, "u_View", ShaderDataType.Matrix4x4);
-            ubomap.addShaderUniform(BaseCamera.PROJECTMATRIX, "u_Projection", ShaderDataType.Matrix4x4);
-            ubomap.addShaderUniform(BaseCamera.VIEWPROJECTMATRIX, "u_ViewProjection", ShaderDataType.Matrix4x4);
-            ubomap.addShaderUniform(BaseCamera.PROJECTION_PARAMS, "u_ProjectionParams", ShaderDataType.Vector4);
-            ubomap.addShaderUniform(BaseCamera.VIEWPORT, "u_Viewport", ShaderDataType.Vector4);
-            ubomap.addShaderUniform(BaseCamera.CAMERADIRECTION, "u_CameraDirection", ShaderDataType.Vector3);
-            ubomap.addShaderUniform(BaseCamera.CAMERAUP, "u_CameraUp", ShaderDataType.Vector3);
-            ubomap.addShaderUniform(BaseCamera.CAMERAPOS, "u_CameraPos", ShaderDataType.Vector3);
 
-        } else {
-            camerauniformMap.addShaderUniform(BaseCamera.CAMERAPOS, "u_CameraPos", ShaderDataType.Vector3);
-            camerauniformMap.addShaderUniform(BaseCamera.VIEWMATRIX, "u_View", ShaderDataType.Matrix4x4);
-            camerauniformMap.addShaderUniform(BaseCamera.PROJECTMATRIX, "u_Projection", ShaderDataType.Matrix4x4);
-            camerauniformMap.addShaderUniform(BaseCamera.VIEWPROJECTMATRIX, "u_ViewProjection", ShaderDataType.Matrix4x4);
-            camerauniformMap.addShaderUniform(BaseCamera.CAMERADIRECTION, "u_CameraDirection", ShaderDataType.Vector3);
-            camerauniformMap.addShaderUniform(BaseCamera.CAMERAUP, "u_CameraUp", ShaderDataType.Vector3);
-            camerauniformMap.addShaderUniform(BaseCamera.VIEWPORT, "u_Viewport", ShaderDataType.Vector4);
-            camerauniformMap.addShaderUniform(BaseCamera.PROJECTION_PARAMS, "u_ProjectionParams", ShaderDataType.Vector4);
-        }
+        camerauniformMap.addShaderUniform(BaseCamera.CAMERAPOS, "u_CameraPos", ShaderDataType.Vector3);
+        camerauniformMap.addShaderUniform(BaseCamera.VIEWMATRIX, "u_View", ShaderDataType.Matrix4x4);
+        camerauniformMap.addShaderUniform(BaseCamera.PROJECTMATRIX, "u_Projection", ShaderDataType.Matrix4x4);
+        camerauniformMap.addShaderUniform(BaseCamera.VIEWPROJECTMATRIX, "u_ViewProjection", ShaderDataType.Matrix4x4);
+        camerauniformMap.addShaderUniform(BaseCamera.CAMERADIRECTION, "u_CameraDirection", ShaderDataType.Vector3);
+        camerauniformMap.addShaderUniform(BaseCamera.CAMERAUP, "u_CameraUp", ShaderDataType.Vector3);
+        camerauniformMap.addShaderUniform(BaseCamera.VIEWPORT, "u_Viewport", ShaderDataType.Vector4);
+        camerauniformMap.addShaderUniform(BaseCamera.PROJECTION_PARAMS, "u_ProjectionParams", ShaderDataType.Vector4);
+
         camerauniformMap.addShaderUniform(BaseCamera.DEPTHTEXTURE, "u_CameraDepthTexture", ShaderDataType.Texture2D);
         camerauniformMap.addShaderUniform(BaseCamera.DEPTHNORMALSTEXTURE, "u_CameraDepthNormalsTexture", ShaderDataType.Texture2D);
         camerauniformMap.addShaderUniform(BaseCamera.OPAQUETEXTURE, "u_CameraOpaqueTexture", ShaderDataType.Texture2D);
@@ -388,10 +373,6 @@ export class BaseCamera extends Sprite3D {
         this.useOcclusionCulling = true;
         this._renderEngine = LayaGL.renderEngine;
         this._orthographic = false;
-        if (Config._uniformBlock) {
-            this._shaderValues.createUniformBuffer(BaseCamera.UBONAME_CAMERA, BaseCamera.caemraUBOUnifromMap);
-        }
-
         this._skyRenderElement = new SkyRenderElement();
     }
 

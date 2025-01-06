@@ -13,6 +13,7 @@ import { InternalRenderTarget } from "../../DriverDesign/RenderDevice/InternalRe
 import { WebCameraNodeData, WebSceneNodeData } from "../../RenderModuleData/WebModuleData/3D/WebModuleData";
 import { WebDefineDatas } from "../../RenderModuleData/WebModuleData/WebDefineDatas";
 import { WebGLShaderData } from "../../RenderModuleData/WebModuleData/WebGLShaderData";
+import { WebGLCommandUniformMap } from "../RenderDevice/WebGLCommandUniformMap";
 import { WebGLEngine } from "../RenderDevice/WebGLEngine";
 import { WebGLRenderElement3D } from "./WebGLRenderElement3D";
 
@@ -68,6 +69,11 @@ export class WebGLRenderContext3D implements IRenderContext3D {
 
     set cameraData(value: WebGLShaderData) {
         this._cameraData = value;
+        if (value) {
+            let cameraUniformMap = <WebGLCommandUniformMap>LayaGL.renderDeviceFactory.createGlobalUniformMap("BaseCamera");
+            value.createUniformBuffer("BaseCamera", cameraUniformMap);
+            value.updateUBOBuffer("BaseCamera");
+        }
     }
 
     get sceneModuleData(): WebSceneNodeData {

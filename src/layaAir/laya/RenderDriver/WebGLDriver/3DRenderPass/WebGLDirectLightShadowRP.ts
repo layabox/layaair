@@ -208,11 +208,6 @@ export class WebGLDirectLightShadowRP {
                 context.setScissor(Vector4.TEMP);
             }
 
-            if (Config._uniformBlock) {
-                shaderValues.updateUBOBuffer(Scene3D.UBONAME_SHADOW);
-                sliceData.cameraShaderValue.updateUBOBuffer(BaseCamera.UBONAME_CAMERA);
-            }
-
             context.setClearData(RenderClearFlag.Depth, Color.BLACK, 1, 0);
             this._renderQueue.renderQueue(context);
             Stat.shadowMapDrawCall += this._renderQueue.elements.length;

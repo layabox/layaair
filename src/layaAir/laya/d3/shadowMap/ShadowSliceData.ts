@@ -141,12 +141,7 @@ export class ShadowSpotData {
     constructor() {
         this.cameraShaderValue = LayaGL.renderDeviceFactory.createShaderData(null);
 
-        if (Config._uniformBlock) {
-            this.cameraShaderValue.createUniformBuffer(BaseCamera.UBONAME_CAMERA, BaseCamera.caemraUBOUnifromMap);
-        }
-
         this.cameraCullInfo = new CameraCullInfo();
-
     }
 }
 
@@ -234,10 +229,5 @@ export class ShadowSliceData {
      */
     constructor() {
         this.cameraShaderValue = LayaGL.renderDeviceFactory.createShaderData(null);
-
-        if (Config._uniformBlock) {
-            this.cameraShaderValue.createUniformBuffer(BaseCamera.UBONAME_CAMERA, BaseCamera.caemraUBOUnifromMap);
-        }
-
     }
 }

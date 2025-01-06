@@ -58,15 +58,9 @@ export class ShadowCasterPass {
 
         const sceneUniformMap = LayaGL.renderDeviceFactory.createGlobalUniformMap("Scene3D");
 
-        if (Config._uniformBlock) {
-            let UBOUniformMap = ShadowCasterPass.shadowCasterUBOUniformMap = LayaGL.renderDeviceFactory.createGlobalUniformMap(Scene3D.UBONAME_SHADOW);
-            UBOUniformMap.addShaderUniform(ShadowCasterPass.SHADOW_BIAS, "u_ShadowBias", ShaderDataType.Vector4);
-            UBOUniformMap.addShaderUniform(ShadowCasterPass.SHADOW_LIGHT_DIRECTION, "u_ShadowLightDirection", ShaderDataType.Vector3);
-            sceneUniformMap.addShaderUniform(Shader3D.propertyNameToID(Scene3D.UBONAME_SHADOW), Scene3D.UBONAME_SHADOW, ShaderDataType.None);
-        } else {
-            sceneUniformMap.addShaderUniform(ShadowCasterPass.SHADOW_BIAS, "u_ShadowBias", ShaderDataType.Vector4);
-            sceneUniformMap.addShaderUniform(ShadowCasterPass.SHADOW_LIGHT_DIRECTION, "u_ShadowLightDirection", ShaderDataType.Vector3);
-        }
+        sceneUniformMap.addShaderUniform(ShadowCasterPass.SHADOW_BIAS, "u_ShadowBias", ShaderDataType.Vector4);
+        sceneUniformMap.addShaderUniform(ShadowCasterPass.SHADOW_LIGHT_DIRECTION, "u_ShadowLightDirection", ShaderDataType.Vector3);
+
         sceneUniformMap.addShaderUniformArray(ShadowCasterPass.SHADOW_SPLIT_SPHERES, "u_ShadowSplitSpheres", ShaderDataType.Vector4, 4); //兼容WGSL
         sceneUniformMap.addShaderUniformArray(ShadowCasterPass.SHADOW_MATRICES, "u_ShadowMatrices", ShaderDataType.Matrix4x4, 4); //兼容WGSL
         sceneUniformMap.addShaderUniform(ShadowCasterPass.SHADOW_MAP_SIZE, "u_ShadowMapSize", ShaderDataType.Vector4);
