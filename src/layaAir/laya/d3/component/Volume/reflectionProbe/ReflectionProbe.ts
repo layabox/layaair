@@ -10,6 +10,9 @@ import { Vector3 } from "../../../../maths/Vector3";
 import { Vector4 } from "../../../../maths/Vector4";
 import { Laya3DRender } from "../../../RenderObjs/Laya3DRender";
 import { IReflectionProbeData } from "../../../../RenderDriver/RenderModuleData/Design/3D/I3DRenderModuleData";
+import { LayaGL } from "../../../../layagl/LayaGL";
+import { Shader3D } from "../../../../RenderEngine/RenderShader/Shader3D";
+import { ShaderDataType } from "../../../../RenderDriver/DriverDesign/RenderDevice/ShaderData";
 
 
 /**
@@ -32,6 +35,19 @@ export enum ReflectionProbeMode {
  * @zh 用于实现反射探针组件
  */
 export class ReflectionProbe extends Volume {
+
+	static IBLTEX: number;
+
+	static IBLROUGHNESSLEVEL: number;
+
+	static AMBIENTSH: number;
+
+	static AMBIENTCOLOR: number;
+
+	static AMBIENTINTENSITY: number;
+
+	static REFLECTIONINTENSITY: number;
+
 	/**
 	 * @en Number of reflection probes
 	 * @zh 反射探针数量
@@ -43,6 +59,33 @@ export class ReflectionProbe extends Volume {
 	 */
 	static getID(): number {
 		return ReflectionProbe.reflectionCount++;
+	}
+
+	static init() {
+		let unifomrMap = LayaGL.renderDeviceFactory.createGlobalUniformMap("ReflectionProbe");
+
+		const addUniform = (name: string, type: number, arrayLength: number = 0) => {
+			let unifomrIndex = Shader3D.propertyNameToID(name);
+			if (arrayLength > 0) {
+				unifomrMap.addShaderUniformArray(unifomrIndex, name, type, arrayLength);
+			}
+			else {
+				unifomrMap.addShaderUniform(unifomrIndex, name, type);
+			}
+			return unifomrIndex;
+		};
+
+		ReflectionProbe.AMBIENTCOLOR = addUniform("u_AmbientColor", ShaderDataType.Vector4);
+
+		ReflectionProbe.AMBIENTSH = addUniform("u_IblSH", ShaderDataType.Vector4, 9);
+
+		ReflectionProbe.IBLTEX = addUniform("u_IBLTex", ShaderDataType.TextureCube);
+
+		ReflectionProbe.IBLROUGHNESSLEVEL = addUniform("u_IBLRoughnessLevel", ShaderDataType.Float);
+
+		ReflectionProbe.AMBIENTINTENSITY = addUniform("u_AmbientIntensity", ShaderDataType.Float);
+
+		ReflectionProbe.REFLECTIONINTENSITY = addUniform("u_ReflectionIntensity", ShaderDataType.Float);
 	}
 
 	/**

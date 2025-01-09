@@ -43,6 +43,7 @@ export class WebBaseRenderNode implements IBaseRenderNode {
     probeReflection: WebReflectionProbe;
     volumetricGI: WebVolumetricGI;
     shaderData: ShaderData;
+    additionShaderData: Map<string, ShaderData>;
     baseGeometryBounds: Bounds;
     transform: Transform3D;
     _worldParams: Vector4;
@@ -107,6 +108,7 @@ export class WebBaseRenderNode implements IBaseRenderNode {
         this.lightmapDirtyFlag = -1;
         this.lightmapScaleOffset = new Vector4(1, 1, 0, 0);
         this.set_caculateBoundingBox(this, this._ownerCalculateBoundingBox);
+        this.additionShaderData = new Map();
     }
 
     /**
@@ -269,6 +271,8 @@ export class WebBaseRenderNode implements IBaseRenderNode {
         this._commonUniformMap.length = 0;
         this._commonUniformMap = null;
         this.shaderData.destroy();
+        this.additionShaderData.clear();
+        this.additionShaderData = null;
     }
 
 }

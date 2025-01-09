@@ -1,14 +1,15 @@
+import { ReflectionProbe } from "../../../../d3/component/Volume/reflectionProbe/ReflectionProbe";
 import { RenderableSprite3D } from "../../../../d3/core/RenderableSprite3D";
 import { Sprite3DRenderDeclaration } from "../../../../d3/core/render/Sprite3DRenderDeclaration";
 import { AmbientMode } from "../../../../d3/core/scene/AmbientMode";
 import { Bounds } from "../../../../d3/math/Bounds";
+import { LayaGL } from "../../../../layagl/LayaGL";
 import { Color } from "../../../../maths/Color";
 import { Vector3 } from "../../../../maths/Vector3";
 import { Vector4 } from "../../../../maths/Vector4";
 import { InternalTexture } from "../../../DriverDesign/RenderDevice/InternalTexture";
 import { ShaderData } from "../../../DriverDesign/RenderDevice/ShaderData";
 import { IReflectionProbeData } from "../../Design/3D/I3DRenderModuleData";
-
 
 
 export class WebReflectionProbe implements IReflectionProbeData {
@@ -102,22 +103,22 @@ export class WebReflectionProbe implements IReflectionProbeData {
         if (this.ambientMode == AmbientMode.SolidColor) {
             data.removeDefine(Sprite3DRenderDeclaration.SHADERDEFINE_GI_LEGACYIBL);
             data.removeDefine(Sprite3DRenderDeclaration.SHADERDEFINE_GI_IBL);
-            data.setColor(RenderableSprite3D.AMBIENTCOLOR, this._ambientColor);
+            data.setColor(ReflectionProbe.AMBIENTCOLOR, this._ambientColor);
         } else if (this.iblTex && this._ambientSH) {
             data.addDefine(Sprite3DRenderDeclaration.SHADERDEFINE_GI_IBL);
             data.removeDefine(Sprite3DRenderDeclaration.SHADERDEFINE_GI_LEGACYIBL);
             if (this.iblTex) {
-                data._setInternalTexture(RenderableSprite3D.IBLTEX, this.iblTex);
-                data.setNumber(RenderableSprite3D.IBLROUGHNESSLEVEL, this.iblTex.maxMipmapLevel);
+                data._setInternalTexture(ReflectionProbe.IBLTEX, this.iblTex);
+                data.setNumber(ReflectionProbe.IBLROUGHNESSLEVEL, this.iblTex.maxMipmapLevel);
             };
             this.iblTexRGBD ? data.addDefine(Sprite3DRenderDeclaration.SHADERDEFINE_IBL_RGBD) : data.removeDefine(Sprite3DRenderDeclaration.SHADERDEFINE_IBL_RGBD);
-            this._ambientSH && data.setBuffer(RenderableSprite3D.AMBIENTSH, this._ambientSH);
+            this._ambientSH && data.setBuffer(ReflectionProbe.AMBIENTSH, this._ambientSH);
         } else {
             data.removeDefine(Sprite3DRenderDeclaration.SHADERDEFINE_GI_LEGACYIBL);
             data.removeDefine(Sprite3DRenderDeclaration.SHADERDEFINE_GI_IBL);
         }
-        data.setNumber(RenderableSprite3D.AMBIENTINTENSITY, this.ambientIntensity);
-        data.setNumber(RenderableSprite3D.REFLECTIONINTENSITY, this.reflectionIntensity);
+        data.setNumber(ReflectionProbe.AMBIENTINTENSITY, this.ambientIntensity);
+        data.setNumber(ReflectionProbe.REFLECTIONINTENSITY, this.reflectionIntensity);
     }
 
 }

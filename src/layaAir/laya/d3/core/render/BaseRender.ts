@@ -492,8 +492,8 @@ export class BaseRender extends Component {
         if (this._baseRenderNode.reflectionMode == ReflectionProbeMode.off) {
             this._baseRenderNode.shaderData.removeDefine(Sprite3DRenderDeclaration.SHADERDEFINE_SPECCUBE_BOX_PROJECTION);
             this._baseRenderNode.shaderData.addDefine(Sprite3DRenderDeclaration.SHADERDEFINE_GI_IBL);
-            this._baseRenderNode.shaderData.setTexture(RenderableSprite3D.IBLTEX, TextureCube.blackTexture);
-            this._baseRenderNode.shaderData.setNumber(RenderableSprite3D.IBLROUGHNESSLEVEL, 0);
+            this._baseRenderNode.shaderData.setTexture(ReflectionProbe.IBLTEX, TextureCube.blackTexture);
+            this._baseRenderNode.shaderData.setNumber(ReflectionProbe.IBLROUGHNESSLEVEL, 0);
         };
         this._getIrradientMode();
     }

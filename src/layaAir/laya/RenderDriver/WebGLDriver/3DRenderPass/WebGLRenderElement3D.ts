@@ -34,6 +34,8 @@ export class WebGLRenderElement3D implements IRenderElement3D {
 
     renderShaderData: WebGLShaderData;
 
+    spriteShaderDatas: Map<string, WebGLShaderData>;
+
     transform: Transform3D;
 
     isRender: boolean;
@@ -101,7 +103,9 @@ export class WebGLRenderElement3D implements IRenderElement3D {
                 if (this.renderShaderData) {
                     var uploadSprite3D: boolean = (shaderIns._uploadRender !== this.renderShaderData) || switchUpdateMark;
                     if (uploadSprite3D || switchShader) {
-                        shaderIns.uploadUniforms(shaderIns._spriteUniformParamsMap, this.renderShaderData, uploadSprite3D);
+                        shaderIns._spriteUniformParamsMaps.forEach((uniforms, key) => {
+                            shaderIns.uploadUniforms(uniforms, this.renderShaderData, uploadSprite3D);
+                        });
                         shaderIns._uploadRender = this.renderShaderData;
                     }
                 }

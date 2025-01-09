@@ -40,6 +40,7 @@ export interface IBaseRenderNode {
     boundsChange: boolean;
     staticMask: number;
     shaderData: ShaderData;
+    additionShaderData: Map<string, ShaderData>;
     lightmapIndex: number;
     lightmap: ILightMapData;
     probeReflection: IReflectionProbeData;

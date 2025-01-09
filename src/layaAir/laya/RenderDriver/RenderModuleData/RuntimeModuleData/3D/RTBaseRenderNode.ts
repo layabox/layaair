@@ -65,7 +65,7 @@ export class RTBaseRenderNode implements IBaseRenderNode {
     private _bounds: Bounds;
     public get bounds(): Bounds {
         // //if(this.boundsChange){
-        var aa =this._nativeObj._bounds;//触发get
+        var aa = this._nativeObj._bounds;//触发get
         // //}
         return this._bounds as Bounds;
     }
@@ -113,6 +113,16 @@ export class RTBaseRenderNode implements IBaseRenderNode {
         this._shaderData = value;
         this._nativeObj.setShaderData((value as any)._nativeObj);
     }
+
+    private _additionShaderData: Map<string, ShaderData>;
+    public get additionShaderData(): Map<string, ShaderData> {
+        return this._additionShaderData;
+    }
+    public set additionShaderData(value: Map<string, ShaderData>) {
+        this.additionShaderData = value;
+        // todo
+    }
+
     public get lightmapIndex(): number {
         return this._nativeObj.lightmapIndex;
     }
@@ -228,10 +238,10 @@ export class RTBaseRenderNode implements IBaseRenderNode {
     }
     _applyLightProb(): void {
         this._nativeObj._applyLightProb();
-     }
-     _applyReflection(): void {
+    }
+    _applyReflection(): void {
         this._nativeObj._applyReflection();
-     }
+    }
     setRenderelements(value: IRenderElement3D[]): void {
         var tempArray: any[] = [];
         this.renderelements.length = 0;
