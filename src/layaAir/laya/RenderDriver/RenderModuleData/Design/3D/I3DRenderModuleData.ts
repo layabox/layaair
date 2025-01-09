@@ -164,6 +164,10 @@ export interface IReflectionProbeData {
     updateMark: number;
     /**@internal */
     iblTexRGBD: boolean;
+
+    /** @internal */
+    _shaderData: ShaderData;
+
     /**@internal */
     setProbePosition(value: Vector3): void;
     /**@internal */

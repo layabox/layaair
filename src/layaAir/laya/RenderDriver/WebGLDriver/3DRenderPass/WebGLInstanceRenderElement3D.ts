@@ -149,6 +149,12 @@ export class WebGLInstanceRenderElement3D extends WebGLRenderElement3D implement
                 pass.nodeCommonMap = null;
             }
 
+            if (this.additionShaderData) {
+                this.additionShaderData.forEach((shaderData, key) => {
+                    comDef.addDefineDatas(shaderData.getDefineData());
+                });
+            }
+
             comDef.addDefineDatas(this.materialShaderData._defineDatas);
 
             comDef.add(MeshSprite3DShaderDeclaration.SHADERDEFINE_GPU_INSTANCE);

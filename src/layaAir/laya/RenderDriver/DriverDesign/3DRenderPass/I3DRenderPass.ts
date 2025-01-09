@@ -42,6 +42,7 @@ export interface IRenderElement3D {
     materialShaderData: ShaderData;
     materialRenderQueue: number;
     renderShaderData: ShaderData;
+    additionShaderData: Map<string, ShaderData>;
     transform: Transform3D;
     canDynamicBatch: boolean;
     isRender: boolean;

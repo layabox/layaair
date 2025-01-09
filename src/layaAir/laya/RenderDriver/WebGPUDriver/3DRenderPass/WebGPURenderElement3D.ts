@@ -4,6 +4,7 @@ import { ShaderPass } from "../../../RenderEngine/RenderShader/ShaderPass";
 import { SubShader } from "../../../RenderEngine/RenderShader/SubShader";
 import { Transform3D } from "../../../d3/core/Transform3D";
 import { IRenderElement3D } from "../../DriverDesign/3DRenderPass/I3DRenderPass";
+import { ShaderData } from "../../DriverDesign/RenderDevice/ShaderData";
 import { RenderState } from "../../RenderModuleData/Design/RenderState";
 import { WebBaseRenderNode } from "../../RenderModuleData/WebModuleData/3D/WebBaseRenderNode";
 import { WebDefineDatas } from "../../RenderModuleData/WebModuleData/WebDefineDatas";
@@ -40,6 +41,7 @@ export class WebGPURenderElement3D implements IRenderElement3D, IRenderPipelineI
     protected _sceneData: WebGPUShaderData;
     protected _cameraData: WebGPUShaderData;
     renderShaderData: WebGPUShaderData;
+    additionShaderData: Map<string, ShaderData>;
     materialShaderData: WebGPUShaderData;
     materialRenderQueue: number;
     materialId: number;

@@ -83,6 +83,7 @@ export class WebGLInstanceRenderBatch {
                         instanceRenderElement.materialShaderData = element.materialShaderData;
                         instanceRenderElement.materialRenderQueue = element.materialRenderQueue;
                         instanceRenderElement.renderShaderData = element.renderShaderData;
+                        instanceRenderElement.additionShaderData = element.additionShaderData;
                         instanceRenderElement.owner = element.owner;
                         instanceRenderElement.setGeometry(element.geometry);
 
@@ -91,7 +92,7 @@ export class WebGLInstanceRenderBatch {
                         list.add(originElement);
                         list.add(element);
                         elementArray[instanceIndex] = instanceRenderElement;
-                        instanceMark.batched = true; 
+                        instanceMark.batched = true;
                     }
                 } else {
                     instanceMark.updateMark = this._updateCountMark;

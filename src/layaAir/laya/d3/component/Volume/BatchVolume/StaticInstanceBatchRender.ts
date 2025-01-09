@@ -164,6 +164,7 @@ export class StaticInstanceBatchRender extends BatchRender {
         instanceRenderElement.material = element.material;
         instanceRenderElement.setTransform(null);
         instanceRenderElement.renderSubShader = element.renderSubShader;
+        instanceRenderElement._renderElementOBJ.additionShaderData = element._renderElementOBJ.additionShaderData;
         let list = instanceRenderElement._instanceBatchElementList;
         list.length = 0;
         list.add(element);

@@ -113,6 +113,7 @@ export class NoRenderRenderElement3D implements IRenderElement3D {
     materialShaderData: ShaderData;
     materialRenderQueue: number;
     renderShaderData: ShaderData;
+    additionShaderData: Map<string, ShaderData>;
     transform: Transform3D;
     canDynamicBatch: boolean;
     isRender: boolean;
@@ -145,6 +146,7 @@ export class NoRenderInstanceRenderElement3D implements IInstanceRenderElement3D
     materialShaderData: ShaderData;
     materialRenderQueue: number;
     renderShaderData: ShaderData;
+    additionShaderData: Map<string, ShaderData>;
     transform: Transform3D;
     canDynamicBatch: boolean;
     isRender: boolean;

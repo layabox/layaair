@@ -4,11 +4,13 @@ import { Config3D } from "../../../../Config3D";
 import { ShaderPass } from "../../../RenderEngine/RenderShader/ShaderPass";
 import { SubShader } from "../../../RenderEngine/RenderShader/SubShader";
 import { Transform3D } from "../../../d3/core/Transform3D";
+import { LayaGL } from "../../../layagl/LayaGL";
 import { FastSinglelist } from "../../../utils/SingletonList";
 import { IRenderElement3D } from "../../DriverDesign/3DRenderPass/I3DRenderPass";
 import { WebBaseRenderNode } from "../../RenderModuleData/WebModuleData/3D/WebBaseRenderNode";
 import { WebDefineDatas } from "../../RenderModuleData/WebModuleData/WebDefineDatas";
 import { WebGLShaderData } from "../../RenderModuleData/WebModuleData/WebGLShaderData";
+import { WebGLCommandUniformMap } from "../RenderDevice/WebGLCommandUniformMap";
 import { WebGLEngine } from "../RenderDevice/WebGLEngine";
 import { WebGLRenderGeometryElement } from "../RenderDevice/WebGLRenderGeometryElement";
 import { WebGLShaderInstance } from "../RenderDevice/WebGLShaderInstance";
@@ -34,7 +36,7 @@ export class WebGLRenderElement3D implements IRenderElement3D {
 
     renderShaderData: WebGLShaderData;
 
-    spriteShaderDatas: Map<string, WebGLShaderData>;
+    additionShaderData: Map<string, WebGLShaderData> | null;
 
     transform: Transform3D;
 
@@ -67,6 +69,18 @@ export class WebGLRenderElement3D implements IRenderElement3D {
                 matSubBuffer.bufferBlock.needUpload();
             }
         }
+
+        // addition ubo
+        if (this.additionShaderData) {
+            this.additionShaderData.forEach((shaderData, key) => {
+                let uniformMap = <WebGLCommandUniformMap>LayaGL.renderDeviceFactory.createGlobalUniformMap(key);
+                let buffer = shaderData.createSubUniformBuffer(key, uniformMap._idata);
+                if (buffer && buffer.needUpload) {
+                    buffer.bufferBlock.needUpload();
+                }
+            });
+        }
+
         this._invertFront = this._getInvertFront();
     }
 
@@ -103,12 +117,23 @@ export class WebGLRenderElement3D implements IRenderElement3D {
                 if (this.renderShaderData) {
                     var uploadSprite3D: boolean = (shaderIns._uploadRender !== this.renderShaderData) || switchUpdateMark;
                     if (uploadSprite3D || switchShader) {
-                        shaderIns._spriteUniformParamsMaps.forEach((uniforms, key) => {
-                            shaderIns.uploadUniforms(uniforms, this.renderShaderData, uploadSprite3D);
-                        });
+                        shaderIns.uploadUniforms(shaderIns._spriteUniformParamsMap, this.renderShaderData, uploadSprite3D);
                         shaderIns._uploadRender = this.renderShaderData;
                     }
                 }
+
+                // addition
+                if (this.additionShaderData) {
+                    this.additionShaderData.forEach((shaderData, key) => {
+                        let needUpload = shaderIns._additionShaderData.get(key) !== shaderData || switchUpdateMark
+                        if (needUpload || switchShader) {
+                            let encoder = shaderIns._additionUniformParamsMaps.get(key);
+                            shaderIns.uploadUniforms(encoder, shaderData, needUpload);
+                        }
+                        shaderIns._additionShaderData.set(key, shaderData);
+                    });
+                }
+
                 //camera
                 var uploadCamera: boolean = shaderIns._uploadCameraShaderValue !== cameraShaderData || switchUpdateMark;
                 if (uploadCamera || switchShader) {
@@ -156,6 +181,13 @@ export class WebGLRenderElement3D implements IRenderElement3D {
             } else {
                 pass.nodeCommonMap = null;
             }
+
+            if (this.additionShaderData) {
+                this.additionShaderData.forEach((shaderData, key) => {
+                    comDef.addDefineDatas(shaderData.getDefineData());
+                });
+            }
+
             comDef.addDefineDatas(this.materialShaderData._defineDatas);
 
             var shaderIns = pass.withCompile(comDef) as WebGLShaderInstance;
@@ -178,5 +210,6 @@ export class WebGLRenderElement3D implements IRenderElement3D {
         this.renderShaderData = null;
         this.transform = null;
         this.isRender = null;
+        this.additionShaderData = null;
     }
 }

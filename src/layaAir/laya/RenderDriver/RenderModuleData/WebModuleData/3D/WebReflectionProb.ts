@@ -48,11 +48,16 @@ export class WebReflectionProbe implements IReflectionProbeData {
     private _ambientColor: Color;
     /**@internal */
     private _ambientSH: Float32Array;
+
+    /** @internal */
+    _shaderData: ShaderData;
+
     /**@internal */
     constructor() {
         this._shCoefficients = [];
         this._probePosition = new Vector3();
         this._ambientColor = new Color();
+        this._shaderData = LayaGL.renderDeviceFactory.createShaderData();
     }
 
     /**
@@ -62,6 +67,8 @@ export class WebReflectionProbe implements IReflectionProbeData {
         this.bound = null;
         delete this._shCoefficients;
         delete this._ambientSH;
+        this._shaderData.destroy();
+        delete this._shaderData;
 
     }
     /**@internal */
@@ -102,10 +109,10 @@ export class WebReflectionProbe implements IReflectionProbeData {
         }
         if (this.ambientMode == AmbientMode.SolidColor) {
             data.removeDefine(Sprite3DRenderDeclaration.SHADERDEFINE_GI_LEGACYIBL);
-            data.removeDefine(Sprite3DRenderDeclaration.SHADERDEFINE_GI_IBL);
+            data.removeDefine(ReflectionProbe.SHADERDEFINE_GI_IBL);
             data.setColor(ReflectionProbe.AMBIENTCOLOR, this._ambientColor);
         } else if (this.iblTex && this._ambientSH) {
-            data.addDefine(Sprite3DRenderDeclaration.SHADERDEFINE_GI_IBL);
+            data.addDefine(ReflectionProbe.SHADERDEFINE_GI_IBL);
             data.removeDefine(Sprite3DRenderDeclaration.SHADERDEFINE_GI_LEGACYIBL);
             if (this.iblTex) {
                 data._setInternalTexture(ReflectionProbe.IBLTEX, this.iblTex);
@@ -115,7 +122,7 @@ export class WebReflectionProbe implements IReflectionProbeData {
             this._ambientSH && data.setBuffer(ReflectionProbe.AMBIENTSH, this._ambientSH);
         } else {
             data.removeDefine(Sprite3DRenderDeclaration.SHADERDEFINE_GI_LEGACYIBL);
-            data.removeDefine(Sprite3DRenderDeclaration.SHADERDEFINE_GI_IBL);
+            data.removeDefine(ReflectionProbe.SHADERDEFINE_GI_IBL);
         }
         data.setNumber(ReflectionProbe.AMBIENTINTENSITY, this.ambientIntensity);
         data.setNumber(ReflectionProbe.REFLECTIONINTENSITY, this.reflectionIntensity);

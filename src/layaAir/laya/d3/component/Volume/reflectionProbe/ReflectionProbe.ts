@@ -12,7 +12,8 @@ import { Laya3DRender } from "../../../RenderObjs/Laya3DRender";
 import { IReflectionProbeData } from "../../../../RenderDriver/RenderModuleData/Design/3D/I3DRenderModuleData";
 import { LayaGL } from "../../../../layagl/LayaGL";
 import { Shader3D } from "../../../../RenderEngine/RenderShader/Shader3D";
-import { ShaderDataType } from "../../../../RenderDriver/DriverDesign/RenderDevice/ShaderData";
+import { ShaderData, ShaderDataType } from "../../../../RenderDriver/DriverDesign/RenderDevice/ShaderData";
+import { ShaderDefine } from "../../../../RenderDriver/RenderModuleData/Design/ShaderDefine";
 
 
 /**
@@ -36,16 +37,25 @@ export enum ReflectionProbeMode {
  */
 export class ReflectionProbe extends Volume {
 
+	/** @internal */
+	static SHADERDEFINE_GI_IBL: ShaderDefine;
+
+	/** @internal */
 	static IBLTEX: number;
 
+	/** @internal */
 	static IBLROUGHNESSLEVEL: number;
 
+	/** @internal */
 	static AMBIENTSH: number;
 
+	/** @internal */
 	static AMBIENTCOLOR: number;
 
+	/** @internal */
 	static AMBIENTINTENSITY: number;
 
+	/** @internal */
 	static REFLECTIONINTENSITY: number;
 
 	/**
@@ -62,6 +72,9 @@ export class ReflectionProbe extends Volume {
 	}
 
 	static init() {
+
+		ReflectionProbe.SHADERDEFINE_GI_IBL = Shader3D.getDefineByName("GI_IBL");
+
 		let unifomrMap = LayaGL.renderDeviceFactory.createGlobalUniformMap("ReflectionProbe");
 
 		const addUniform = (name: string, type: number, arrayLength: number = 0) => {
@@ -110,6 +123,10 @@ export class ReflectionProbe extends Volume {
 	_reflectionProbeID: number;
 	/**@internal */
 	_dataModule: IReflectionProbeData;
+
+	get shaderData(): ShaderData {
+		return this._dataModule._shaderData;
+	}
 
 	constructor() {
 		super();

@@ -31,6 +31,8 @@ export class WebGLShaderInstance implements IShaderInstance {
     _sceneUniformParamsMap: CommandEncoder;
     /**@internal */
     _cameraUniformParamsMap: CommandEncoder;
+    /** @internal */
+    _spriteUniformParamsMap: CommandEncoder;
     /**@internal */
     _materialUniformParamsMap: CommandEncoder;
     /**@internal */
@@ -39,7 +41,7 @@ export class WebGLShaderInstance implements IShaderInstance {
     private _customUniformParamsMap: any[] = [];
 
     /**@internal */
-    _spriteUniformParamsMaps: Map<string, CommandEncoder>;
+    _additionUniformParamsMaps: Map<string, CommandEncoder>;
 
     /**@internal */
     _uploadMark: number = -1;
@@ -55,7 +57,7 @@ export class WebGLShaderInstance implements IShaderInstance {
     _uploadScene: ShaderData;
 
     /** @internal */
-    _additionSprite: Map<string, ShaderData>;
+    _additionShaderData: Map<string, ShaderData>;
 
     /**
      * 创建一个 <code>ShaderInstance</code> 实例。
@@ -100,20 +102,21 @@ export class WebGLShaderInstance implements IShaderInstance {
      */
     protected _create3D(): void {
 
-        this._additionSprite = new Map();
+        this._additionShaderData = new Map();
 
         this._sceneUniformParamsMap = new CommandEncoder();
         this._cameraUniformParamsMap = new CommandEncoder();
+        this._spriteUniformParamsMap = new CommandEncoder();
         this._materialUniformParamsMap = new CommandEncoder();
         const sceneParams = LayaGL.renderDeviceFactory.createGlobalUniformMap("Scene3D") as WebGLCommandUniformMap;
         const cameraParams = LayaGL.renderDeviceFactory.createGlobalUniformMap("BaseCamera") as WebGLCommandUniformMap;
         const customParams = LayaGL.renderDeviceFactory.createGlobalUniformMap("Custom") as WebGLCommandUniformMap;
 
-        this._spriteUniformParamsMaps = new Map();
-        this._spriteUniformParamsMaps.set("Sprite3D", new CommandEncoder());
+        this._additionUniformParamsMaps = new Map();
+        this._additionUniformParamsMaps.set("Sprite3D", new CommandEncoder());
 
         const reflectionParams = LayaGL.renderDeviceFactory.createGlobalUniformMap("ReflectionProbe") as WebGLCommandUniformMap;
-        this._spriteUniformParamsMaps.set("ReflectionProbe", new CommandEncoder());
+        this._additionUniformParamsMaps.set("ReflectionProbe", new CommandEncoder());
 
         let i, n;
         let data: ShaderVariable[] = this._renderShaderInstance.getUniformMap();
@@ -126,10 +129,10 @@ export class WebGLShaderInstance implements IShaderInstance {
                 this._cameraUniformParamsMap.addShaderUniform(one);
             }
             else if (reflectionParams.hasPtrID(one.dataOffset)) {
-                this._spriteUniformParamsMaps.get("ReflectionProbe").addShaderUniform(one);
+                this._additionUniformParamsMaps.get("ReflectionProbe").addShaderUniform(one);
             }
             else if (this.hasSpritePtrID(one.dataOffset)) {
-                this._spriteUniformParamsMaps.get("Sprite3D").addShaderUniform(one);
+                this._spriteUniformParamsMap.addShaderUniform(one);
             }
             else if (customParams.hasPtrID(one.dataOffset)) {
                 this._customUniformParamsMap || (this._customUniformParamsMap = []);
@@ -186,16 +189,18 @@ export class WebGLShaderInstance implements IShaderInstance {
         this._renderShaderInstance.destroy();
         this._sceneUniformParamsMap = null;
         this._cameraUniformParamsMap = null;
-        this._spriteUniformParamsMaps.clear();
-        this._spriteUniformParamsMaps = null;
+        this._spriteUniformParamsMap = null;
+        this._sprite2DUniformParamsMap = null;
+        this._additionUniformParamsMaps.clear();
+        this._additionUniformParamsMaps = null;
         this._materialUniformParamsMap = null
         this._customUniformParamsMap = null;
 
         this._uploadMaterial = null;
         this._uploadCameraShaderValue = null;
         this._uploadScene = null;
-        this._additionSprite.clear();
-        this._additionSprite = null;
+        this._additionShaderData.clear();
+        this._additionShaderData = null;
     }
 
     /**

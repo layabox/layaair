@@ -103,6 +103,7 @@ export class RenderElement {
     set render(value: BaseRender) {
         this._baseRender = value;
         this._renderElementOBJ.renderShaderData = value._baseRenderNode.shaderData;
+        this._renderElementOBJ.additionShaderData = value._baseRenderNode.additionShaderData;
     }
 
     /**@ignore */
