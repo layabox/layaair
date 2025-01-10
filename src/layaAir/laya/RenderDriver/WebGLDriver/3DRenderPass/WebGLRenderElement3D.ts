@@ -71,7 +71,7 @@ export class WebGLRenderElement3D implements IRenderElement3D {
         }
 
         // addition ubo
-        if (this.additionShaderData) {
+        if (this.additionShaderData && Config._uniformBlock) {
             this.additionShaderData.forEach((shaderData, key) => {
                 let uniformMap = <WebGLCommandUniformMap>LayaGL.renderDeviceFactory.createGlobalUniformMap(key);
                 let buffer = shaderData.createSubUniformBuffer(key, uniformMap._idata);
